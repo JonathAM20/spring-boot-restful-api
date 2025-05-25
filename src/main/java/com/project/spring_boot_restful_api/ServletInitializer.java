@@ -1,4 +1,4 @@
-package com.project.springboot_restful_api;
+package com.project.spring_boot_restful_api;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

@@ -1,4 +1,4 @@
-package com.project.springboot_restful_api.model;
+package com.project.spring_boot_restful_api.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

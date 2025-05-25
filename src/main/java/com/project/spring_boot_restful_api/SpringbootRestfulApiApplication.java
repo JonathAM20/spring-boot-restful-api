@@ -1,4 +1,4 @@
-package com.project.springboot_restful_api;
+package com.project.spring_boot_restful_api;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,4 +1,4 @@
-package com.project.springboot_restful_api.model;
+package com.project.spring_boot_restful_api.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
