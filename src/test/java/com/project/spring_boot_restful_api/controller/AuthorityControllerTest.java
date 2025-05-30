@@ -20,47 +20,60 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 public class AuthorityControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+        @Autowired
+        private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+        @Autowired
+        private ObjectMapper objectMapper;
 
-    @Test
-    void testDeleteById() throws Exception {
-        mockMvc.perform(delete("/authority").param("id", "1"))
-                .andExpect(status().isBadRequest());
-    }
+        @Test
+        void testDeleteById() throws Exception {
+                mockMvc.perform(delete("/authority").param("id", "1"))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    void testFindAll() throws Exception {
-        mockMvc.perform(get("/authority"))
-                .andExpect(status().isOk());
-    }
+        @Test
+        void testUpdate() throws Exception {
+                Authority authority = Authority.builder().name("teste2").build();
 
-    @Test
-    void testFindByName() throws Exception {
-        mockMvc.perform(get("/authority/teste"))
-                .andExpect(status().isBadRequest());
-    }
+                mockMvc.perform(put("/authority/teste")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
+        }
 
-    @Test
-    void testSave() throws Exception {
-        Authority authority = Authority.builder().name("teste").build();
+        @Test
+        void testFindByName() throws Exception {
+                mockMvc.perform(get("/authority/teste"))
+                                .andExpect(status().isBadRequest());
+        }
 
-        mockMvc.perform(post("/authority")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(authority)))
-                .andExpect(status().isOk());
-    }
+        @Test
+        void testFindAll() throws Exception {
+                mockMvc.perform(get("/authority"))
+                                .andExpect(status().isOk());
+        }
 
-    @Test
-    void testUpdate() throws Exception {
-        Authority authority = Authority.builder().name("teste2").build();
+        @Test
+        void testSaveFindByNameUpdateAndDeleteById() throws Exception {
+                Authority authority = Authority.builder().name("teste").build();
 
-        mockMvc.perform(put("/authority/teste")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(authority)))
-                .andExpect(status().isBadRequest());
-    }
+                // save
+                mockMvc.perform(post("/authority")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isOk());
+                // findByName
+                mockMvc.perform(get("/authority/teste"))
+                                .andExpect(status().isOk());
+                // update
+                authority.setName("teste2");
+                mockMvc.perform(put("/authority/teste")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isOk());
+                // deleteById
+                mockMvc.perform(delete("/authority").param("id", "1"))
+                                .andExpect(status().isOk());
+        }
 }
