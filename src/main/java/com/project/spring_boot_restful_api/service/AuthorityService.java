@@ -1,10 +1,10 @@
 package com.project.spring_boot_restful_api.service;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 
+import com.project.spring_boot_restful_api.exception.ModelEntityNotFoundException;
 import com.project.spring_boot_restful_api.model.Authority;
 import com.project.spring_boot_restful_api.repository.AuthorityRepository;
 
@@ -37,13 +37,15 @@ public class AuthorityService {
     public Authority findByName(final String name) {
         return authorityRepository
                 .findByName(name)
-                .orElseThrow(() -> new NoSuchElementException("Authority not found"));
+                .orElseThrow(() -> new ModelEntityNotFoundException(
+                        String.format("Authority not found, invalid name: [%s]", name)));
     }
 
     public Authority findById(final Long id) {
         return authorityRepository
                 .findById(id)
-                .orElseThrow(() -> new NoSuchElementException("Authority not found"));
+                .orElseThrow(() -> new ModelEntityNotFoundException(
+                        String.format("Authority not found, invalid id: [%d]", id)));
     }
 
     public void deleteById(final Long id) {
