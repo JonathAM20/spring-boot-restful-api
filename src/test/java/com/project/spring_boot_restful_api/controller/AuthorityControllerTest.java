@@ -34,9 +34,9 @@ public class AuthorityControllerTest {
 
         @Test
         void testUpdate() throws Exception {
-                Authority authority = Authority.builder().name("teste2").build();
+                Authority authority = Authority.builder().name("test2").build();
 
-                mockMvc.perform(put("/authority/teste")
+                mockMvc.perform(put("/authority/test")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isBadRequest());
@@ -44,7 +44,7 @@ public class AuthorityControllerTest {
 
         @Test
         void testFindByName() throws Exception {
-                mockMvc.perform(get("/authority/teste"))
+                mockMvc.perform(get("/authority/test"))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -56,7 +56,7 @@ public class AuthorityControllerTest {
 
         @Test
         void testSaveFindByNameUpdateAndDeleteById() throws Exception {
-                Authority authority = Authority.builder().name("teste").build();
+                Authority authority = Authority.builder().name("test").build();
 
                 // save
                 mockMvc.perform(post("/authority")
@@ -64,11 +64,11 @@ public class AuthorityControllerTest {
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isOk());
                 // findByName
-                mockMvc.perform(get("/authority/teste"))
+                mockMvc.perform(get("/authority/test"))
                                 .andExpect(status().isOk());
                 // update
-                authority.setName("teste2");
-                mockMvc.perform(put("/authority/teste")
+                authority.setName("test2");
+                mockMvc.perform(put("/authority/test")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isOk());
