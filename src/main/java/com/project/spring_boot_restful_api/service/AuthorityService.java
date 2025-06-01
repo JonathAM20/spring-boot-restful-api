@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.project.spring_boot_restful_api.exception.ModelEntityNotFoundException;
+import com.project.spring_boot_restful_api.exception.NullModelEntityPropertyValueException;
 import com.project.spring_boot_restful_api.model.Authority;
 import com.project.spring_boot_restful_api.repository.AuthorityRepository;
 
@@ -17,17 +18,31 @@ public class AuthorityService {
         this.authorityRepository = authorityRepository;
     }
 
-    public void save(final Authority authority) {
+    public Authority save(final Authority authority) {
         var newAuthority = Authority.builder()
                 .name(authority.getName())
                 .build();
-        authorityRepository.save(newAuthority);
+
+        if (newAuthority.getName() == null) {
+            throw new NullModelEntityPropertyValueException("Invalid Authority, null property: name");
+        } else if (newAuthority.getName().isEmpty()) {
+            throw new NullModelEntityPropertyValueException("Invalid Authority, empty property: name");
+        }
+
+        return authorityRepository.save(newAuthority);
     }
 
-    public void update(final String name, final Authority authority) {
+    public Authority update(final String name, final Authority authority) {
         var authorityToUpdate = findByName(name);
         authorityToUpdate.setName(authority.getName());
-        authorityRepository.save(authorityToUpdate);
+
+        if (authorityToUpdate.getName() == null) {
+            throw new NullModelEntityPropertyValueException("Invalid Authority, null property: name");
+        } else if (authorityToUpdate.getName().isEmpty()) {
+            throw new NullModelEntityPropertyValueException("Invalid Authority, empty property: name");
+        }
+
+        return authorityRepository.save(authorityToUpdate);
     }
 
     public List<Authority> findAll() {

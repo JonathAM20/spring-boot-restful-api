@@ -26,9 +26,11 @@ public class AuthorityControllerTest {
         @Autowired
         private ObjectMapper objectMapper;
 
+        private final String AUTHORITY_PATH = "/authority";
+
         @Test
         void testDeleteById() throws Exception {
-                mockMvc.perform(delete("/authority").param("id", "1"))
+                mockMvc.perform(delete(AUTHORITY_PATH).param("id", "1"))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -36,7 +38,7 @@ public class AuthorityControllerTest {
         void testUpdate() throws Exception {
                 Authority authority = Authority.builder().name("test2").build();
 
-                mockMvc.perform(put("/authority/test")
+                mockMvc.perform(put(AUTHORITY_PATH + "/test")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isBadRequest());
@@ -44,36 +46,60 @@ public class AuthorityControllerTest {
 
         @Test
         void testFindByName() throws Exception {
-                mockMvc.perform(get("/authority/test"))
+                mockMvc.perform(get(AUTHORITY_PATH + "/test"))
                                 .andExpect(status().isBadRequest());
         }
 
         @Test
         void testFindAll() throws Exception {
-                mockMvc.perform(get("/authority"))
+                mockMvc.perform(get(AUTHORITY_PATH))
                                 .andExpect(status().isOk());
         }
 
         @Test
         void testSaveFindByNameUpdateAndDeleteById() throws Exception {
-                Authority authority = Authority.builder().name("test").build();
+                Authority authority = Authority.builder().build();
 
+                // save with null name
+                mockMvc.perform(post(AUTHORITY_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
+                // save with empty name
+                authority.setName("");
+                mockMvc.perform(post(AUTHORITY_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
                 // save
-                mockMvc.perform(post("/authority")
+                authority.setName("test");
+                mockMvc.perform(post(AUTHORITY_PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isOk());
                 // findByName
-                mockMvc.perform(get("/authority/test"))
+                mockMvc.perform(get(AUTHORITY_PATH + "/test"))
                                 .andExpect(status().isOk());
+                // update with null name
+                authority.setName(null);
+                mockMvc.perform(put(AUTHORITY_PATH + "/test")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
+                // update with empty name
+                authority.setName("");
+                mockMvc.perform(put(AUTHORITY_PATH + "/test")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
                 // update
                 authority.setName("test2");
-                mockMvc.perform(put("/authority/test")
+                mockMvc.perform(put(AUTHORITY_PATH + "/test")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isOk());
                 // deleteById
-                mockMvc.perform(delete("/authority").param("id", "1"))
+                mockMvc.perform(delete(AUTHORITY_PATH).param("id", "1"))
                                 .andExpect(status().isOk());
         }
 }
