@@ -12,4 +12,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<?> handleModelEntityNotFoundException(ModelEntityNotFoundException exception) {
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(NullModelEntityPropertyValueException.class)
+    public ResponseEntity<?> handleNullModelEntityPropertyValueException(
+            NullModelEntityPropertyValueException exception) {
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
 }
