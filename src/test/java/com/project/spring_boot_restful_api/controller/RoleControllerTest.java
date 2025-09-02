@@ -11,7 +11,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.spring_boot_restful_api.model.Authority;
 import com.project.spring_boot_restful_api.model.Role;
 import com.project.spring_boot_restful_api.service.AuthorityService;
+import com.project.spring_boot_restful_api.service.RoleService;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,6 +35,9 @@ public class RoleControllerTest {
 
         @Autowired
         private AuthorityService authorityService;
+
+        @Autowired
+        private RoleService roleService;
 
         private final String ROLE_PATH = "/role";
 
@@ -100,6 +105,7 @@ public class RoleControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(role)))
                                 .andExpect(status().isOk());
+
                 // deleteById
                 mockMvc.perform(delete(ROLE_PATH).param("id", "1"))
                                 .andExpect(status().isOk());

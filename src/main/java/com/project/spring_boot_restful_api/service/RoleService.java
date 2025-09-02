@@ -18,18 +18,19 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    public void save(final Role role) {
+    public Role save(final Role role) {
         var newRole = Role.builder()
                 .name(role.getName())
                 .authorities(role.getAuthorities())
                 .build();
 
-        if (role.getAuthorities() == null) {
+        if (newRole.getName() == null || newRole.getName().isBlank()) {
+            throw new NullModelEntityPropertyValueException("Invalid Role, null property: name");
+        } else if (newRole.getAuthorities() == null || newRole.getAuthorities().isEmpty()) {
             throw new NullModelEntityPropertyValueException("Invalid Role, null property: authorities");
-        } else if (role.getAuthorities().isEmpty()) {
-            throw new NullModelEntityPropertyValueException("Invalid Role, empty property: authorities");
         }
-        roleRepository.save(newRole);
+
+        return roleRepository.save(newRole);
     }
 
     public void update(final String name, final Role role) {
@@ -37,11 +38,12 @@ public class RoleService {
         roleToUpdate.setName(role.getName());
         roleToUpdate.setAuthorities(role.getAuthorities());
 
-        if (role.getAuthorities() == null) {
+        if (roleToUpdate.getName() == null || roleToUpdate.getName().isBlank()) {
+            throw new NullModelEntityPropertyValueException("Invalid Role, null property: name");
+        } else if (roleToUpdate.getAuthorities() == null || roleToUpdate.getAuthorities().isEmpty()) {
             throw new NullModelEntityPropertyValueException("Invalid Role, null property: authorities");
-        } else if (role.getAuthorities().isEmpty()) {
-            throw new NullModelEntityPropertyValueException("Invalid Role, empty property: authorities");
         }
+
         roleRepository.save(roleToUpdate);
     }
 
