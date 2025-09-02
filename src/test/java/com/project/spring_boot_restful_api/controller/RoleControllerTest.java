@@ -11,16 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.project.spring_boot_restful_api.model.Authority;
 import com.project.spring_boot_restful_api.model.Role;
 import com.project.spring_boot_restful_api.service.AuthorityService;
-import com.project.spring_boot_restful_api.service.RoleService;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @SpringBootTest
@@ -36,9 +33,6 @@ public class RoleControllerTest {
         @Autowired
         private AuthorityService authorityService;
 
-        @Autowired
-        private RoleService roleService;
-
         private final String ROLE_PATH = "/role";
 
         @Test
@@ -49,9 +43,9 @@ public class RoleControllerTest {
 
         @Test
         void testUpdate() throws Exception {
-                Role role = Role.builder().name("test2").build();
+                Role role = Role.builder().name("roleT2").build();
 
-                mockMvc.perform(put(ROLE_PATH + "/test")
+                mockMvc.perform(put(ROLE_PATH + "/roleT")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(role)))
                                 .andExpect(status().isBadRequest());
@@ -59,7 +53,7 @@ public class RoleControllerTest {
 
         @Test
         void testFindByName() throws Exception {
-                mockMvc.perform(get(ROLE_PATH + "/test"))
+                mockMvc.perform(get(ROLE_PATH + "/roleT"))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -70,42 +64,80 @@ public class RoleControllerTest {
         }
 
         @Test
-        void testSaveFindByNameUpdateAndDeleteById() throws Exception {
-                Role role = Role.builder().name("test").build();
+        void testSaveWithInvalidProtertyValues() throws Exception {
 
-                // save without authorities set
+                // save with null property values
+                Role roleWithNullPropertyValue = Role.builder().name(null).authorities(null).build();
+                mockMvc.perform(post(ROLE_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(roleWithNullPropertyValue)))
+                                .andExpect(status().isBadRequest());
+
+                // save with null name
+                Authority authority = authorityService.save(Authority.builder().name("authorityT").build());
+                Role roleWithNullName = Role.builder().name(null).authorities(Set.of(authority)).build();
+                mockMvc.perform(post(ROLE_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(roleWithNullName)))
+                                .andExpect(status().isBadRequest());
+
+                // save with null authorities
+                Role roleWithNullAuthorities = Role.builder().name("roleT").authorities(null).build();
+                mockMvc.perform(post(ROLE_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(roleWithNullAuthorities)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void testSaveAndUpdateWithInvalidPropertyValues() throws Exception {
+
+                Authority authority = authorityService.save(Authority.builder().name("authorityT").build());
+                Role role = Role.builder().name("roleT").authorities(Set.of(authority)).build();
+
+                // save
                 mockMvc.perform(post(ROLE_PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(role)))
+                                .andExpect(status().isOk());
+
+                // update with null name
+                Role roleWithNullName = Role.builder().name(null).authorities(Set.of(authority)).build();
+                mockMvc.perform(put(ROLE_PATH + "/roleT")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(roleWithNullName)))
                                 .andExpect(status().isBadRequest());
+
+                // save with null authorities
+                Role roleWithNullAuthorities = Role.builder().name("roleT").authorities(null).build();
+                mockMvc.perform(put(ROLE_PATH + "/roleT")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(roleWithNullAuthorities)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void testSaveFindByNameUpdateAndDeleteById() throws Exception {
+
+                Authority readAuthority = authorityService.save(Authority.builder().name("authorityT").build());
+                Authority writeAuthority = authorityService.save(Authority.builder().name("authorityT2").build());
+                Role role = Role.builder().name("roleT").authorities(Set.of(readAuthority)).build();
+
                 // save
-                Authority authorityTest = authorityService.save(Authority.builder().name("test").build());
-                role.setAuthorities(Set.of(authorityTest));
                 mockMvc.perform(post(ROLE_PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(role)))
                                 .andExpect(status().isOk());
                 // findByName
-                mockMvc.perform(get(ROLE_PATH + "/test"))
+                mockMvc.perform(get(ROLE_PATH + "/roleT"))
                                 .andExpect(status().isOk());
-                // update without authorities set
-                role.setAuthorities(new HashSet<>());
-                mockMvc.perform(put(ROLE_PATH + "/test")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(role)))
-                                .andExpect(status().isBadRequest());
                 // update
-                Authority authorityTest2 = authorityService.save(Authority.builder().name("test2").build());
-                Set<Authority> authorities = new HashSet<>();
-                authorities.add(authorityTest);
-                authorities.add(authorityTest2);
-                role.setName("test2");
-                role.setAuthorities(authorities);
-                mockMvc.perform(put(ROLE_PATH + "/test")
+                role.setName("roleT2");
+                role.setAuthorities(Set.of(readAuthority, writeAuthority));
+                mockMvc.perform(put(ROLE_PATH + "/roleT")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(role)))
                                 .andExpect(status().isOk());
-
                 // deleteById
                 mockMvc.perform(delete(ROLE_PATH).param("id", "1"))
                                 .andExpect(status().isOk());
