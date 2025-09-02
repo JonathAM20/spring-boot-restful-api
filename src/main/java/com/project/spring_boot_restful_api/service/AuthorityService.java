@@ -23,10 +23,8 @@ public class AuthorityService {
                 .name(authority.getName())
                 .build();
 
-        if (newAuthority.getName() == null) {
+        if (newAuthority.getName() == null || newAuthority.getName().isBlank()) {
             throw new NullModelEntityPropertyValueException("Invalid Authority, null property: name");
-        } else if (newAuthority.getName().isEmpty()) {
-            throw new NullModelEntityPropertyValueException("Invalid Authority, empty property: name");
         }
 
         return authorityRepository.save(newAuthority);
@@ -36,10 +34,8 @@ public class AuthorityService {
         var authorityToUpdate = findByName(name);
         authorityToUpdate.setName(authority.getName());
 
-        if (authorityToUpdate.getName() == null) {
+        if (authorityToUpdate.getName() == null || authorityToUpdate.getName().isBlank()) {
             throw new NullModelEntityPropertyValueException("Invalid Authority, null property: name");
-        } else if (authorityToUpdate.getName().isEmpty()) {
-            throw new NullModelEntityPropertyValueException("Invalid Authority, empty property: name");
         }
 
         return authorityRepository.save(authorityToUpdate);

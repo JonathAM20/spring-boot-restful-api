@@ -36,9 +36,9 @@ public class AuthorityControllerTest {
 
         @Test
         void testUpdate() throws Exception {
-                Authority authority = Authority.builder().name("test2").build();
+                Authority authority = Authority.builder().name("authorityT2").build();
 
-                mockMvc.perform(put(AUTHORITY_PATH + "/test")
+                mockMvc.perform(put(AUTHORITY_PATH + "/authorityT")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isBadRequest());
@@ -46,7 +46,7 @@ public class AuthorityControllerTest {
 
         @Test
         void testFindByName() throws Exception {
-                mockMvc.perform(get(AUTHORITY_PATH + "/test"))
+                mockMvc.perform(get(AUTHORITY_PATH + "/authorityT"))
                                 .andExpect(status().isBadRequest());
         }
 
@@ -57,7 +57,7 @@ public class AuthorityControllerTest {
         }
 
         @Test
-        void testSaveFindByNameUpdateAndDeleteById() throws Exception {
+        void testSaveWithInvalidPropertyValues() throws Exception {
                 Authority authority = Authority.builder().build();
 
                 // save with null name
@@ -71,30 +71,53 @@ public class AuthorityControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isBadRequest());
+                // save with blank name
+                authority.setName(" ");
+                mockMvc.perform(post(AUTHORITY_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void testSaveAndUpdateWithInvalidPropertyValues() throws Exception {
+                Authority authority = Authority.builder().name("authorityT").build();
+
                 // save
-                authority.setName("test");
+                mockMvc.perform(post(AUTHORITY_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isOk());
+                // save with empty name
+                authority.setName("");
+                mockMvc.perform(post(AUTHORITY_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
+                // save with blank name
+                authority.setName(" ");
+                mockMvc.perform(post(AUTHORITY_PATH)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(authority)))
+                                .andExpect(status().isBadRequest());
+        }
+
+        @Test
+        void testSaveFindByNameUpdateAndDeleteById() throws Exception {
+                Authority authority = Authority.builder().build();
+
+                // save
+                authority.setName("authorityT");
                 mockMvc.perform(post(AUTHORITY_PATH)
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isOk());
                 // findByName
-                mockMvc.perform(get(AUTHORITY_PATH + "/test"))
+                mockMvc.perform(get(AUTHORITY_PATH + "/authorityT"))
                                 .andExpect(status().isOk());
-                // update with null name
-                authority.setName(null);
-                mockMvc.perform(put(AUTHORITY_PATH + "/test")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(authority)))
-                                .andExpect(status().isBadRequest());
-                // update with empty name
-                authority.setName("");
-                mockMvc.perform(put(AUTHORITY_PATH + "/test")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(objectMapper.writeValueAsString(authority)))
-                                .andExpect(status().isBadRequest());
                 // update
-                authority.setName("test2");
-                mockMvc.perform(put(AUTHORITY_PATH + "/test")
+                authority.setName("authorityT2");
+                mockMvc.perform(put(AUTHORITY_PATH + "/authorityT")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(objectMapper.writeValueAsString(authority)))
                                 .andExpect(status().isOk());
